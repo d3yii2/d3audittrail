@@ -1,0 +1,22 @@
+{
+    "name": "d3yii2/d3audittrail",
+    "description": "Show audittrail data",
+    "type": "library",
+    "keywords": ["yii2","audittrail"],
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Uldis Nelsons",
+            "email": "uldis@weberp.lv"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "sammaye/": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "d3yii2\\d3audittrail\\": ""
+        }
+    }
+}
