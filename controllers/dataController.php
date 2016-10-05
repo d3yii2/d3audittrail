@@ -31,6 +31,10 @@ class DataController extends LayoutController
 
     public function actionList($modelName, $modelId)
     {
+        if(!$modelName::findOne($modelId)){
+            throw new exception('No access!');
+        }
+
         $modelsNames   = [];
         $modelsNames[] = [
             'model_name' => $modelName,
@@ -61,6 +65,9 @@ class DataController extends LayoutController
                         : [];
 
                 foreach ($relRecords as $rr) {
+                    if(!$rModel['model']::findOne($rr['model_id'])){
+                        continue;
+                    }
                     $modelsNames[] = [
                         'model_name' => $rModel['model'],
                         'model_id' => $rr['model_id'],
