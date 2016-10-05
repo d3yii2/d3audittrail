@@ -6,7 +6,7 @@ use dmstr\web\traits\AccessBehaviorTrait;
 
 class Module extends \yii\base\Module
 {
-    use AccessBehaviorTrait;
+   // use AccessBehaviorTrait;
 
     public $controllerNamespace = 'd3yii2\d3audittrail\controllers';
 
