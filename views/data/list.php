@@ -53,7 +53,7 @@ Yii::$app->view->params['pageButtons'] = ThButton::widget([
                                     ?>
                                     <tr data-key="8">
                                         <td><?= $row['stamp'] ?></td>
-                                        <td><?= $row['field']?$mData['attribute_labels'][$row['field']]:' - ' ?></td>
+                                        <td><?= ($row['field']&&isset($mData['attribute_labels'][$row['field']]))?$mData['attribute_labels'][$row['field']]:$row['field'] ?></td>
                                         <td><?= TblAuditTrail::getActionValueLabel($row['action']) ?></td>
                                         <td><?= $row['old_value'] ?></td>
                                         <td><?= $row['new_value'] ?></td>
