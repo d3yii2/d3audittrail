@@ -3,11 +3,12 @@
     "description": "Show audittrail data",
     "type": "library",
     "keywords": ["yii2","audittrail"],
-    "license": "Apache-2.0",
+    "license": "BSD-4-Clause",
     "authors": [
         {
             "name": "Uldis Nelsons",
-            "email": "uldis@weberp.lv"
+            "email": "uldis@weberp.lv",
+            "role": "Developer"
         }
     ],
     "require": {
