@@ -8,7 +8,8 @@
         {
             "name": "Uldis Nelsons",
             "email": "uldis@weberp.lv",
-            "role": "Developer"
+            "role": "Developer",
+            "homepage": "http://www.weberp.lv/"
         }
     ],
     "require": {
