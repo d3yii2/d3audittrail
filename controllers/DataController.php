@@ -2,9 +2,10 @@
 
 namespace d3yii2\d3audittrail\controllers;
 
-use yii\web\Controller;
 use ea\app\controllers\LayoutController;
 use d3yii2\d3audittrail\models\TblAuditTrail;
+use yii\base\Exception;
+use yii\db\ActiveRecord;
 use yii\filters\AccessControl;
 
 class DataController extends LayoutController
@@ -13,11 +14,11 @@ class DataController extends LayoutController
     /**
      * @inheritdoc
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
@@ -29,10 +30,17 @@ class DataController extends LayoutController
         ];
     }
 
-    public function actionList($modelName, $modelId)
+    /**
+     * @param string $modelName
+     * @param int $modelId
+     * @return string
+     * @throws Exception
+     * @throws \yii\db\Exception
+     */
+    public function actionList($modelName, $modelId): string
     {
         if(!$modelName::findOne($modelId)){
-            throw new exception('No access!');
+            throw new Exception('No access!');
         }
 
         $modelsNames   = [];
@@ -61,8 +69,7 @@ class DataController extends LayoutController
                     ->asArray()
                     ->all();
 
-                $hidded_fields = isset($rModel['hidded_fields']) ? $rModel['hidded_fields']
-                        : [];
+                $hidded_fields = $rModel['hidded_fields'] ?? [];
 
                 foreach ($relRecords as $rr) {
                     if(!$rModel['model']::findOne($rr['model_id'])){
@@ -72,7 +79,7 @@ class DataController extends LayoutController
                         'model_name' => $rModel['model'],
                         'model_id' => $rr['model_id'],
                         'hidded_fields' => $hidded_fields,
-                        'field_sql' => isset($rModel['field_sql'])?$rModel['field_sql']:false,
+                        'field_sql' => $rModel['field_sql']??false,
                     ];
                 }
             }
@@ -87,6 +94,7 @@ class DataController extends LayoutController
              */
             $data[$mName]['label'] = $mName;
 
+            /** @var ActiveRecord $mObject */
             $mObject = new $mName();
 
             $data[$mName]['attribute_labels'] = $mObject->attributeLabels();
