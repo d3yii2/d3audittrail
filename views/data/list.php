@@ -1,23 +1,29 @@
 <?php
 
-use yii\helpers\Html;
+
+use cornernote\returnurl\ReturnUrl;
+use d3system\yii2\web\D3SystemView;
+use eaBlankonThema\widget\ThReturnButton;
 use yii\helpers\Url;
 use eaBlankonThema\widget\ThButton;
 use eaBlankonThema\assetbundles\layout\LayoutAsset;
 use d3yii2\d3audittrail\models\TblAuditTrail;
 
+/**
+* @var D3SystemView $this
+ */
+
 LayoutAsset::register($this);
 
-$title                                 = Yii::t('d3audittrail',
-        'Audittrail data');
-$this->title                           = $title;
-Yii::$app->view->params['pageHeader']  = $title;
-Yii::$app->view->params['pageButtons'] = ThButton::widget([
-        'label' => Yii::t('d3audittrail', 'Back'),
-        'link' => Url::previous(),
-        'icon' => ThButton::ICON_CHEVRON_LEFT,
-        'type' => ThButton::TYPE_DEFAULT
-    ]);
+
+
+$this->title = Yii::t('d3audittrail','Audit trail records');
+$this->setPageHeader($this->title);
+ReturnUrl::$requestKey = 'audittrail-ru';
+$this->addPageButtons(ThReturnButton::widget([
+    'link' => ReturnUrl::getUrl()
+]));
+ReturnUrl::$requestKey = 'ru';
 ?>
 <div class="row">
     <div class="col-md-12">

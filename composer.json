@@ -1,6 +1,6 @@
 {
     "name": "d3yii2/d3audittrail",
-    "description": "Show audittrail data",
+    "description": "Show audit trail data",
     "type": "library",
     "keywords": ["yii2","audittrail"],
     "license": "BSD-4-Clause",

@@ -67,15 +67,8 @@ Define model label
 
 Add to view button
 ----------------
-
-```php
-    $this->addPageButtons(ThButton::widget([
-        'label' => 'Auditpieraksti',
-        'link' => [
-            '/d3audittrail/data/list',
-            'modelName' => \tran\permit\models\ClpTransaction::class,
-            'modelId' => $model->id
-        ],
-        'type' => ThButton::TYPE_SUCCESS,
+    $this->addPageButtons(AuditTrailButton::widget([
+                'modelName' => coalmar\delivery\models\CmdDelivery::className(),
+                'modelId' => $model->id
     ]));
 ```
