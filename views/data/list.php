@@ -4,8 +4,6 @@
 use cornernote\returnurl\ReturnUrl;
 use d3system\yii2\web\D3SystemView;
 use eaBlankonThema\widget\ThReturnButton;
-use yii\helpers\Url;
-use eaBlankonThema\widget\ThButton;
 use eaBlankonThema\assetbundles\layout\LayoutAsset;
 use d3yii2\d3audittrail\models\TblAuditTrail;
 
@@ -21,7 +19,7 @@ $this->title = Yii::t('d3audittrail','Audit trail records');
 $this->setPageHeader($this->title);
 ReturnUrl::$requestKey = 'audittrail-ru';
 $this->addPageButtons(ThReturnButton::widget([
-    'link' => ReturnUrl::getUrl()
+    'backUrl' => ReturnUrl::getUrl()
 ]));
 ReturnUrl::$requestKey = 'ru';
 ?>
