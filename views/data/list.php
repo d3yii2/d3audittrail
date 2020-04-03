@@ -48,7 +48,8 @@ ReturnUrl::$requestKey = 'ru';
                                     <th><?= Yii::t('d3audittrail', 'Action') ?></th>
                                     <th><?= Yii::t('d3audittrail', 'Old Value') ?></th>
                                     <th><?= Yii::t('d3audittrail', 'New Value') ?></th>
-                                    <th><?= Yii::t('d3audittrail', 'User') ?></th>
+                                    <th><?= Yii::t('d3audittrail', 'User Name') ?></th>
+                                    <th><?= Yii::t('d3audittrail', 'Full Name') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -62,6 +63,7 @@ ReturnUrl::$requestKey = 'ru';
                                         <td><?= $row['old_value'] ?></td>
                                         <td><?= $row['new_value'] ?></td>
                                         <td><?= $row['username'] ?></td>
+                                        <td><?= $row['first_name'] ?> <?= $row['last_name'] ?></td>
                                     </tr>
                                     <?php
                                 }

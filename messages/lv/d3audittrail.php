@@ -4,9 +4,10 @@ return [
     'Audit trail' => 'Auditācijas pieraksti',
     'Model ID' => 'Modelis',
     'User ID' => 'Lietotāja ID',
-    'Action' => 'Dartbība',
+    'Action' => 'Darbība',
     'Audit trail records' => 'Auditācijas pieraksti',
-    'User' => 'Lietotjs',
+    'User' => 'Lietotājs',
+    'Full Name' => 'Vārds Uzvārds',
     'Stamp' => 'Laiks',
     'Old Value' => 'Iepriekšējā vērtība',
     'Time' => 'Laiks',
@@ -16,5 +17,6 @@ return [
     'Model' => 'Modelis',
     'ID' => 'ID',
     'Audittrail' => 'Audittrail',
-    'Audittrail data' => 'Audittrail data'
+    'Audittrail data' => 'Audittrail data',
+    'User Name' => 'Lietotāja vārds'
 ];

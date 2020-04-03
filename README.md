@@ -58,15 +58,48 @@ Add to model behaviors
 Define model label
 --------
 ```php
-
+class Model extends extends \yii\db\ActiveRecord
+    /**
+    * model label 
+    */
     public function tableLabel(): string
     {
-        return 'Reģistra ieraksts';
+        return 'Data Record';
     }
+
+    public static function audittrailHiddedFields()
+    {
+        return [
+            'password'
+        ];
+    }
+
+    public static function audittrailSqlFields()
+    {
+        return [
+            'client_id' => 'select name from client where id=:id'
+        ];
+    }
+
+    public static function audittrailRefModels()
+    {
+        return [
+            [
+                'model' => TblAuditTrail::class,
+                'ref_field' => 'my_id',
+                'hidded_fields' => ['a','b'],
+                'field_sql' => [
+                    'field1' => 'select name from user where id=:id'
+                 ]               
+            ]           
+        ];
+    }
+}
 ```    
 
 Add to view button
 ----------------
+```php
     $this->addPageButtons(AuditTrailButton::widget([
                 'modelName' => coalmar\delivery\models\CmdDelivery::className(),
                 'modelId' => $model->id

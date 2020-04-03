@@ -1,84 +1,56 @@
 <?php
 
-namespace d3yii2\d3audittrail\controllers;
 
-use d3yii2\d3audittrail\Module;
-use ea\app\controllers\LayoutController;
+namespace d3yii2\d3audittrail\actions;
+
+
 use d3yii2\d3audittrail\models\TblAuditTrail;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
-use yii\filters\AccessControl;
+use yii\base\Action;
 
-/**
- * Class DataController
- * @package d3yii2\d3audittrail\controllers
- * @property  Module $module
- */
-class DataController extends LayoutController
+class AudittrailListAction extends Action
 {
+    /** @var string */
+    public $modelName;
 
-    /**
-     * @inheritdoc
-     */
-    public function behaviors(): array
+    public function run(int $id): string
     {
-
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'actions' => ['list'],
-                        'roles' => [$this->module->viewRole],
-                    ],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @param string $modelName
-     * @param int $modelId
-     * @return string
-     * @throws Exception
-     * @throws \yii\db\Exception
-     */
-    public function actionList(string $modelName, int $modelId): string
-    {
-        if(!$modelName::findOne($modelId)){
+        /**
+         * validate record id access by controller method findModel() or simple findOne()
+         */
+        if (method_exists($this->controller, 'findModel')) {
+            $this->controller->findModel($id);
+        } elseif (!$this->modelName::findOne($id)) {
             throw new Exception('No access!');
         }
 
-        /**
-         * base model
-         */
         $modelsNames = [
             [
-                'model_name' => $modelName,
-                'model_id' => $modelId,
-                'hidded_fields' => method_exists($modelName,
-                    'audittrailHiddedFields') ? $modelName::audittrailHiddedFields()
+                'model_name' => $this->modelName,
+                'model_id' => $id,
+                'hidded_fields' => method_exists($this->modelName,
+                    'audittrailHiddedFields') ? $this->modelName::audittrailHiddedFields()
                     : [],
-                'field_sql' => method_exists($modelName,
-                    'audittrailSqlFields') ? $modelName::audittrailSqlFields()
+                'field_sql' => method_exists($this->modelName,
+                    'audittrailSqlFields') ? $this->modelName::audittrailSqlFields()
                     : [],
             ],
         ];
 
 
-        if (method_exists($modelName, 'audittrailRefModels')) {
-            $refModels = $modelName::audittrailRefModels();
+        if (method_exists($this->modelName, 'audittrailRefModels')) {
+            $refModels = $this->modelName::audittrailRefModels();
 
             foreach ($refModels as $rModel) {
-                $relRecords    = TblAuditTrail::find()
+                $relRecords = TblAuditTrail::find()
                     ->select('`tbl_audit_trail`.`model_id`')
                     ->where([
                         'model' => $rModel['model'],
                         'field' => $rModel['ref_field'],
                         'action' => TblAuditTrail::ACTION_SET,
-                        'new_value' => $modelId
+                        'new_value' => $id
                     ])
                     ->orderBy('stamp')
                     ->asArray()
@@ -87,25 +59,25 @@ class DataController extends LayoutController
                 $hidded_fields = $rModel['hidded_fields'] ?? [];
 
                 foreach ($relRecords as $rr) {
-                    if(!$rModel['model']::findOne($rr['model_id'])){
+                    if (!$rModel['model']::findOne($rr['model_id'])) {
                         continue;
                     }
                     $modelsNames[] = [
                         'model_name' => $rModel['model'],
                         'model_id' => $rr['model_id'],
                         'hidded_fields' => $hidded_fields,
-                        'field_sql' => $rModel['field_sql']??false,
+                        'field_sql' => $rModel['field_sql'] ?? false,
                     ];
                 }
             }
         }
-
+        $connection = Yii::$app->getDb();
         $data = [];
         foreach ($modelsNames as $m) {
-            $mName                 = $m['model_name'];
-            $mId                   = $m['model_id'];
+            $mName = $m['model_name'];
+            $mId = $m['model_id'];
             /**
-             * @todo add validation to acces to record
+             * @todo add validation to access to record
              */
             $data[$mName]['label'] = $mName;
 
@@ -137,7 +109,6 @@ class DataController extends LayoutController
                 ->all();
 
             if (isset($m['field_sql']) && $m['field_sql']) {
-                $connection  = Yii::$app->getDb();
                 $fieldValues = [];
                 foreach ($data[$mName]['table'] as $k => $row) {
                     if (!isset($m['field_sql'][$row['field']])) {
@@ -147,9 +118,9 @@ class DataController extends LayoutController
                         if (!$row['old_value']) {
                             $fieldValues[$row['field']][$row['old_value']] = $row['old_value'];
                         } else {
-                            $command                                       = $connection->createCommand($m['field_sql'][$row['field']],
+                            $command = $connection->createCommand($m['field_sql'][$row['field']],
                                 [':id' => $row['old_value']]);
-                            $field_value                                   = $command->queryScalar();
+                            $field_value = $command->queryScalar();
                             $fieldValues[$row['field']][$row['old_value']] = $field_value ?: $row['old_value'];
                         }
                     }
@@ -158,9 +129,9 @@ class DataController extends LayoutController
                             $fieldValues[$row['field']][$row['new_value']] = $row['new_value'];
                         } else {
 
-                            $command                                       = $connection->createCommand($m['field_sql'][$row['field']],
+                            $command = $connection->createCommand($m['field_sql'][$row['field']],
                                 [':id' => $row['new_value']]);
-                            $field_value                                   = $command->queryScalar();
+                            $field_value = $command->queryScalar();
                             $fieldValues[$row['field']][$row['new_value']] = $field_value ?: $row['new_value'];
                         }
                     }
@@ -170,7 +141,12 @@ class DataController extends LayoutController
                 }
             }
         }
-        
-        return $this->render('list', ['data' => $data]);
+        return $this->controller->render(
+            '@vendor/d3yii2/d3audittrail/views/data/list',
+            [
+                'data' => $data
+            ]
+        );
+
     }
 }
