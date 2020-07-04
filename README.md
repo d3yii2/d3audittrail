@@ -12,7 +12,6 @@ Add migrations paths
         'migrate' => [
             'class' => 'yii\console\controllers\MigrateController',
             'migrationPath' => [
-                '@vendor/sammaye/yii2-audittrail/migrations',
                 '@vendor/d3yii2/d3audittrail/migrations',
 
             ],
