@@ -100,7 +100,7 @@ class Model extends extends \yii\db\ActiveRecord
 }
 ```    
 
-Add to view button
+Add to view button to audittrail controller (unsecure)
 ----------------
 ```php
     $this->addPageButtons(AuditTrailButton::widget([
@@ -108,3 +108,55 @@ Add to view button
                 'modelId' => $model->id
     ]));
 ```
+
+Add to view button  to actual controller (secure)
+----------------
+```php
+$this->addPageButtons(ThButton::widget([
+    'label' => 'Auditpieraksti',
+    'link' => [
+        'audit-trail',
+        'id' => $model->id,
+        'audittrail-ru' => ReturnUrl::getToken('Partija')
+    ]
+]));
+```
+Add to controller action
+---------------------
+
+    public function behaviors(): array
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => [
+                            'audit-trail'
+                        ],
+                        'roles' => [
+                            '@'
+                        ],
+                    ],
+                ],
+            ],
+            'clearFilterState' => ClearFilterStateBehavior::class,
+        ];
+    }
+
+```php
+    public function actions()
+    {
+        return [
+            'audit-trail' => [
+                'class' => AudittrailListAction::class,
+                'modelName' => CwbrProduct::class,
+            ]
+        ];
+    }
+```
+
+
+
+
