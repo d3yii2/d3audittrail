@@ -12,8 +12,11 @@ use yii\base\Action;
 
 class AudittrailListAction extends Action
 {
-    /** @var string */
+    /** @var string|string[] */
     public $modelName;
+
+    /** @var string[] */
+    public $modelAliasNames = [];
 
     public function run(int $id): string
     {
@@ -29,6 +32,7 @@ class AudittrailListAction extends Action
         $modelsNames = [
             [
                 'model_name' => $this->modelName,
+                'model_alias_names' => $this->modelAliasNames,
                 'model_id' => $id,
                 'hidded_fields' => method_exists($this->modelName,
                     'audittrailHiddedFields') ? $this->modelName::audittrailHiddedFields()
@@ -75,6 +79,11 @@ class AudittrailListAction extends Action
         $data = [];
         foreach ($modelsNames as $m) {
             $mName = $m['model_name'];
+            $mNameList = [$mName];
+
+            foreach($m['model_alias_names']??[] as $modelAliasName){
+                $mNameList[] = $modelAliasName;
+            }
             $mId = $m['model_id'];
             /**
              * @todo add validation to access to record
@@ -99,7 +108,7 @@ class AudittrailListAction extends Action
                 ->leftJoin('user', 'tbl_audit_trail.user_id = user.id')
                 ->leftJoin('d3p_person', 'tbl_audit_trail.user_id = d3p_person.user_id')
                 ->where([
-                    'model' => $mName,
+                    'model' => $mNameList,
                     'model_id' => $mId,
                     //
                 ])
