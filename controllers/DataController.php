@@ -3,7 +3,7 @@
 namespace d3yii2\d3audittrail\controllers;
 
 use d3yii2\d3audittrail\Module;
-use ea\app\controllers\LayoutController;
+use eaBlankonThema\yii2\web\LayoutController;
 use d3yii2\d3audittrail\models\TblAuditTrail;
 use Yii;
 use yii\base\Exception;
