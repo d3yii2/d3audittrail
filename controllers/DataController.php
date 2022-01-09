@@ -116,7 +116,9 @@ class DataController extends LayoutController
             if (method_exists($mName, 'tableLabel')) {
                 $data[$mName]['label'] = $mObject->tableLabel();
             }
-
+            if (method_exists($mName, 'audittrailSqlFields')) {
+                $m['field_sql'] = $mObject::audittrailSqlFields();
+            }
             $data[$mName]['table'] = TblAuditTrail::find()
                 ->select([
                     '`tbl_audit_trail`.*',
