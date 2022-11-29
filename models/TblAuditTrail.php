@@ -27,8 +27,11 @@ class TblAuditTrail extends BaseTblAuditTrail
         return self::findNameById($this->field_name_id);
     }
 
-    public static function findNameById(int $id): string
+    public static function findNameById(int $id, bool $secondCall = false): string
     {
+        if (!$id) {
+            return '-';
+        }
         if (!self::$listIdToName) {
             self::$listIdToName = Yii::$app->cache->getOrSet(
                 'AuditTraiModelNamesList3',
@@ -42,10 +45,17 @@ class TblAuditTrail extends BaseTblAuditTrail
                 60 * 60
             );
         }
-        return self::$listIdToName[$id]??'??';
+        if (isset(self::$listIdToName[$id])) {
+            return self::$listIdToName[$id];
+        }
+        if ($secondCall) {
+            return '??';
+        }
+        Yii::$app->cache->delete('AuditTraiModelNamesList3');
+        return self::findNameById($secondCall, true);
     }
 
-    public static function findIdByName(string $name): int
+    public static function findIdByName(string $name, bool $secondCall = false): int
     {
         if (!self::$listNameToId) {
             self::$listNameToId = Yii::$app->cache->getOrSet(
@@ -60,6 +70,13 @@ class TblAuditTrail extends BaseTblAuditTrail
                 60 * 60
             );
         }
-        return self::$listNameToId[$name]??'0';
+        if (isset(self::$listNameToId[$name])) {
+            return self::$listNameToId[$name];
+        }
+        if ($secondCall) {
+            return 0;
+        }
+        Yii::$app->cache->delete('AuditTraiModelIdList3');
+        return self::findIdByName($name, true);
     }
 }
