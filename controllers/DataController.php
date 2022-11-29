@@ -75,8 +75,8 @@ class DataController extends LayoutController
                 $relRecords    = TblAuditTrail::find()
                     ->select('`tbl_audit_trail`.`model_id`')
                     ->where([
-                        'model' => $rModel['model'],
-                        'field' => $rModel['ref_field'],
+                        'model_name_id' => TblAuditTrail::findIdByName($rModel['model']),
+                        'field_name_id' => TblAuditTrail::findIdByName($rModel['ref_field']),
                         'action' => TblAuditTrail::ACTION_SET,
                         'new_value' => $modelId
                     ])
@@ -102,8 +102,8 @@ class DataController extends LayoutController
 
         $data = [];
         foreach ($modelsNames as $m) {
-            $mName                 = $m['model_name'];
-            $mId                   = $m['model_id'];
+            $mName = $m['model_name'];
+            $mId = $m['model_id'];
             /**
              * @todo add validation to acces to record
              */
@@ -119,6 +119,10 @@ class DataController extends LayoutController
             if (method_exists($mName, 'audittrailSqlFields')) {
                 $m['field_sql'] = $mObject::audittrailSqlFields();
             }
+            $hiddedFields = [];
+            foreach ($m['hidded_fields'] as $hf) {
+                $hiddedFields[] = TblAuditTrail::findIdByName($hf);
+            }
             $data[$mName]['table'] = TblAuditTrail::find()
                 ->select([
                     '`tbl_audit_trail`.*',
@@ -126,18 +130,26 @@ class DataController extends LayoutController
                     'd3p_person.first_name',
                     'd3p_person.last_name',
                 ])
-                ->leftJoin('user', 'tbl_audit_trail.user_id = user.id')
-                ->leftJoin('d3p_person', 'tbl_audit_trail.user_id = d3p_person.user_id')
+                ->leftJoin(
+                    'user',
+                    'tbl_audit_trail.user_id = user.id'
+                )
+                ->leftJoin(
+                    'd3p_person',
+                    'tbl_audit_trail.user_id = d3p_person.user_id'
+                )
                 ->where([
-                    'model' => $mName,
+                    'model_name_id' => TblAuditTrail::findIdByName($mName),
                     'model_id' => $mId,
-                    //
                 ])
-                ->andWhere(['not in', 'field', $m['hidded_fields']])
+                ->andWhere(['not in', 'field_name_id', $hiddedFields])
                 ->orderBy('stamp')
                 ->asArray()
                 ->all();
-
+            foreach ($data[$mName]['table'] as $k => $row) {
+                $data[$mName]['table'][$k]['field'] = TblAuditTrail::findNameById($row['field_name_id']);
+                $data[$mName]['table'][$k]['model'] = TblAuditTrail::findNameById($row['model_name_id']);
+            }
             if (isset($m['field_sql']) && $m['field_sql']) {
                 $connection  = Yii::$app->getDb();
                 $fieldValues = [];
@@ -159,10 +171,12 @@ class DataController extends LayoutController
                         if (!$row['new_value']) {
                             $fieldValues[$row['field']][$row['new_value']] = $row['new_value'];
                         } else {
-
-                            $command                                       = $connection->createCommand($m['field_sql'][$row['field']],
-                                [':id' => $row['new_value']]);
-                            $field_value                                   = $command->queryScalar();
+                            $command = $connection
+                                ->createCommand(
+                                    $m['field_sql'][$row['field']],
+                                    [':id' => $row['new_value']]
+                                );
+                            $field_value = $command->queryScalar();
                             $fieldValues[$row['field']][$row['new_value']] = $field_value ?: $row['new_value'];
                         }
                     }
@@ -172,7 +186,6 @@ class DataController extends LayoutController
                 }
             }
         }
-        
         return $this->render('list', ['data' => $data]);
     }
 }

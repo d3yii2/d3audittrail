@@ -5,6 +5,7 @@
 namespace d3yii2\d3audittrail\models\base;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the base-model class for table "tbl_audit_trail".
@@ -13,14 +14,16 @@ use Yii;
  * @property string $old_value
  * @property string $new_value
  * @property string $action
- * @property string $model
- * @property string $field
+ * @property string $model_name_id
+ * @property string $field_name_id
  * @property string $stamp
- * @property string $user_id
- * @property string $model_id
+ * @property integer $user_id
+ * @property integer $model_id
+ * @property-read string $modelLabel
+ * @property-read string $fieldLabel
  * @property string $aliasModel
  */
-abstract class TblAuditTrail extends \yii\db\ActiveRecord
+abstract class TblAuditTrail extends ActiveRecord
 {
 
 
@@ -28,15 +31,15 @@ abstract class TblAuditTrail extends \yii\db\ActiveRecord
     /**
     * ENUM field values
     */
-    const ACTION_CHANGE = 'CHANGE';
-    const ACTION_CREATE = 'CREATE';
-    const ACTION_DELETE = 'DELETE';
-    const ACTION_SET = 'SET';
-    var $enum_labels = false;
+    public const ACTION_CHANGE = 'CHANGE';
+    public const ACTION_CREATE = 'CREATE';
+    public const ACTION_DELETE = 'DELETE';
+    public const ACTION_SET = 'SET';
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'tbl_audit_trail';
     }
@@ -45,13 +48,13 @@ abstract class TblAuditTrail extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['old_value', 'new_value', 'action'], 'string'],
-            [['action', 'model', 'stamp', 'model_id'], 'required'],
+            [['action', 'model_name_id', 'stamp', 'model_id'], 'required'],
             [['stamp'], 'safe'],
-            [['model', 'field', 'user_id', 'model_id'], 'string', 'max' => 255],
+            [['model_name_id','field_name_id','user_id','model_id'], 'integer'],
             ['action', 'in', 'range' => [
                     self::ACTION_CHANGE,
                     self::ACTION_CREATE,
@@ -65,7 +68,7 @@ abstract class TblAuditTrail extends \yii\db\ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('d3audittrail', 'ID'),
@@ -80,27 +83,22 @@ abstract class TblAuditTrail extends \yii\db\ActiveRecord
         ];
     }
 
-
-
-
     /**
      * get column action enum value label
      * @param string $value
      * @return string
      */
-    public static function getActionValueLabel($value){
+    public static function getActionValueLabel(string $value): string
+    {
         $labels = self::optsAction();
-        if(isset($labels[$value])){
-            return $labels[$value];
-        }
-        return $value;
+        return $labels[$value] ?? $value;
     }
 
     /**
      * column action ENUM value labels
      * @return array
      */
-    public static function optsAction()
+    public static function optsAction(): array
     {
         return [
             self::ACTION_CHANGE => Yii::t('d3audittrail', self::ACTION_CHANGE),
@@ -109,5 +107,4 @@ abstract class TblAuditTrail extends \yii\db\ActiveRecord
             self::ACTION_SET => Yii::t('d3audittrail', self::ACTION_SET),
         ];
     }
-
 }

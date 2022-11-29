@@ -1,6 +1,5 @@
 <?php
 
-
 use cornernote\returnurl\ReturnUrl;
 use d3system\yii2\web\D3SystemView;
 use eaBlankonThema\widget\ThReturnButton;
@@ -9,6 +8,7 @@ use d3yii2\d3audittrail\models\TblAuditTrail;
 
 /**
 * @var D3SystemView $this
+* @var array $data
  */
 
 LayoutAsset::register($this);
@@ -55,10 +55,13 @@ ReturnUrl::$requestKey = 'ru';
                             <tbody>
                                 <?php
                                 foreach ($mData['table'] as $row) {
+                                    $fieldValue = ($row['field'] && isset($mData['attribute_labels'][$row['field']]))
+                                        ? $mData['attribute_labels'][$row['field']]
+                                        : $row['field'];
                                     ?>
                                     <tr data-key="8">
                                         <td><?= $row['stamp'] ?></td>
-                                        <td><?= ($row['field']&&isset($mData['attribute_labels'][$row['field']]))?$mData['attribute_labels'][$row['field']]:$row['field'] ?></td>
+                                        <td><?= $fieldValue ?></td>
                                         <td><?= TblAuditTrail::getActionValueLabel($row['action']) ?></td>
                                         <td><?= $row['old_value'] ?></td>
                                         <td><?= $row['new_value'] ?></td>
