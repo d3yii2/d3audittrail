@@ -17,11 +17,10 @@ LayoutAsset::register($this);
 
 $this->title = Yii::t('d3audittrail','Audit trail records');
 $this->setPageHeader($this->title);
-ReturnUrl::$requestKey = 'audittrail-ru';
 $this->addPageButtons(ThReturnButton::widget([
     'backUrl' => ReturnUrl::getUrl()
 ]));
-ReturnUrl::$requestKey = 'ru';
+
 ?>
 <div class="row">
     <div class="col-md-12">

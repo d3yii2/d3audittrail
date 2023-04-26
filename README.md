@@ -157,6 +157,32 @@ Add to controller action
     }
 ```
 
+Add in kartik grid action column histry button
+---------------------
 
+```php 
+    $returnUrlToken = ReturnUrl::getToken();
+    $columns[] = [
+        'class' => ActionColumn::class,
+        'template' => '{update}{delete}{audit-trail}',
+        'noWrap' => true,
+        'urlCreator' =>
+            static function ($action, $model, $key) use ($returnUrlToken) {
+                return Url::toRoute([
+                    '/d3persons/d3p-person-contact/' . $action,
+                    'id' => (string)$key,
+                    'ru' => $returnUrlToken
+                ]);
+            },
+        'buttons'=>[
+            'audit-trail' => static function ($url, $model) {
+                return Html::a(
+                    '<span class="glyphicon glyphicon-time"></span>', $url, [
+                    'title' => Yii::t('d3audittrail', 'Audit trail'),
+                ]);
+            }
+        ]
+    ]
+```
 
 
