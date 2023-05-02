@@ -17,8 +17,26 @@ class AudittrailListAction extends Action
     /** @var string[] */
     public array $modelAliasNames = [];
 
-    public function run(int $id): string
+    /**
+     * @param int $id table record id
+     * @param int|null $modelId id from tbl_audit_trail_names
+     * @return string
+     * @throws \yii\base\Exception
+     * @throws \yii\httpclient\Exception
+     */
+    public function run(int $id, int $modelId = null): string
     {
+        if ($modelId) {
+            if (!$modelIdName = TblAuditTrail::findNameById($modelId)) {
+                Yii::error('Requested illegal modelId: ' . $modelId);
+                throw new \yii\httpclient\Exception('Illegal request');
+            }
+            if ($modelIdName !== $this->modelName && !is_subclass_of($modelIdName, $this->modelName)) {
+                Yii::error('Requested illegal modelId: ' . $modelId . ' modelName: ' . $modelIdName);
+                throw new \yii\httpclient\Exception('Illegal request');
+            }
+            $this->modelName = $modelIdName;
+        }
         /**
          * validate record id access by controller method findModel() or simple findOne()
          */

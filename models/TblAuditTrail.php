@@ -2,6 +2,7 @@
 
 namespace d3yii2\d3audittrail\models;
 
+use d3system\exceptions\D3ActiveRecordException;
 use d3yii2\d3audittrail\models\base\TblAuditTrail as BaseTblAuditTrail;
 use sammaye\audittrail\AuditTraiNames;
 use Yii;
@@ -49,7 +50,7 @@ class TblAuditTrail extends BaseTblAuditTrail
             return self::$listIdToName[$id];
         }
         if ($secondCall) {
-            return '??';
+            return '';
         }
         Yii::$app->cache->delete('AuditTraiModelNamesList3');
         return self::findNameById($secondCall, true);
@@ -76,7 +77,13 @@ class TblAuditTrail extends BaseTblAuditTrail
         if ($secondCall) {
             return 0;
         }
-        Yii::$app->cache->delete('AuditTraiModelIdList3');
-        return self::findIdByName($name, true);
+        $model = new AuditTraiNames();
+        $model->name = $name;
+        if (!$model->save()) {
+            throw new D3ActiveRecordException($model);
+        }
+        self::$listNameToId[$name] = $model->id;
+        Yii::$app->cache->set('AuditTraiModelIdList3',self::$listNameToId, 60 * 60);
+        return self::$listNameToId[$name];
     }
 }
