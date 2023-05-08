@@ -4,6 +4,7 @@
 namespace d3yii2\d3audittrail\actions;
 
 use d3yii2\d3audittrail\models\TblAuditTrail;
+use sammaye\audittrail\LoggableBehavior;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
@@ -68,8 +69,8 @@ class AudittrailListAction extends Action
                 $relRecords = TblAuditTrail::find()
                     ->select('`tbl_audit_trail`.`model_id`')
                     ->where([
-                        'model_name_id' => TblAuditTrail::findIdByName($rModel['model']),
-                        'field_name_id' => TblAuditTrail::findIdByName($rModel['ref_field']),
+                        'model_name_id' => LoggableBehavior::findIdByName($rModel['model']),
+                        'field_name_id' => LoggableBehavior::findIdByName($rModel['ref_field']),
                         'action' => TblAuditTrail::ACTION_SET,
                         'new_value' => $id
                     ])
@@ -96,10 +97,10 @@ class AudittrailListAction extends Action
         $data = [];
         foreach ($modelsNames as $m) {
             $mName = $m['model_name'];
-            $mNameList = [TblAuditTrail::findIdByName($mName)];
+            $mNameList = [LoggableBehavior::findIdByName($mName)];
 
             foreach($m['model_alias_names']??[] as $modelAliasName){
-                $mNameList[] = TblAuditTrail::findIdByName($modelAliasName);
+                $mNameList[] = LoggableBehavior::findIdByName($modelAliasName);
             }
             $mId = $m['model_id'];
             /**
@@ -116,7 +117,7 @@ class AudittrailListAction extends Action
             }
             $hiddedFields = [];
             foreach ($m['hidded_fields'] as $hf) {
-                $hiddedFields[] = TblAuditTrail::findIdByName($hf);
+                $hiddedFields[] = LoggableBehavior::findIdByName($hf);
             }
             $data[$mName]['table'] = TblAuditTrail::find()
                 ->select([

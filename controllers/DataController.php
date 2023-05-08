@@ -5,6 +5,7 @@ namespace d3yii2\d3audittrail\controllers;
 use d3yii2\d3audittrail\Module;
 use eaBlankonThema\yii2\web\LayoutController;
 use d3yii2\d3audittrail\models\TblAuditTrail;
+use sammaye\audittrail\LoggableBehavior;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
@@ -75,8 +76,8 @@ class DataController extends LayoutController
                 $relRecords    = TblAuditTrail::find()
                     ->select('`tbl_audit_trail`.`model_id`')
                     ->where([
-                        'model_name_id' => TblAuditTrail::findIdByName($rModel['model']),
-                        'field_name_id' => TblAuditTrail::findIdByName($rModel['ref_field']),
+                        'model_name_id' => LoggableBehavior::findIdByName($rModel['model']),
+                        'field_name_id' => LoggableBehavior::findIdByName($rModel['ref_field']),
                         'action' => TblAuditTrail::ACTION_SET,
                         'new_value' => $modelId
                     ])
@@ -121,7 +122,7 @@ class DataController extends LayoutController
             }
             $hiddedFields = [];
             foreach ($m['hidded_fields'] as $hf) {
-                $hiddedFields[] = TblAuditTrail::findIdByName($hf);
+                $hiddedFields[] = LoggableBehavior::findIdByName($hf);
             }
             $data[$mName]['table'] = TblAuditTrail::find()
                 ->select([
@@ -139,7 +140,7 @@ class DataController extends LayoutController
                     'tbl_audit_trail.user_id = d3p_person.user_id'
                 )
                 ->where([
-                    'model_name_id' => TblAuditTrail::findIdByName($mName),
+                    'model_name_id' => LoggableBehavior::findIdByName($mName),
                     'model_id' => $mId,
                 ])
                 ->andWhere(['not in', 'field_name_id', $hiddedFields])
