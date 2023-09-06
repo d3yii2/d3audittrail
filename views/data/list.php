@@ -2,18 +2,13 @@
 
 use cornernote\returnurl\ReturnUrl;
 use d3system\yii2\web\D3SystemView;
-use eaBlankonThema\widget\ThReturnButton;
-use eaBlankonThema\assetbundles\layout\LayoutAsset;
+use eaArgonTheme\widget\ThReturnButton;
 use d3yii2\d3audittrail\models\TblAuditTrail;
 
 /**
 * @var D3SystemView $this
 * @var array $data
  */
-
-LayoutAsset::register($this);
-
-
 
 $this->title = Yii::t('d3audittrail','Audit trail records');
 $this->setPageHeader($this->title);
