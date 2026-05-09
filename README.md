@@ -186,4 +186,14 @@ Add in kartik grid action column histry button
     ]
 ```
 
+find field value by date
+------------------------
 
+```php
+$playerShare = TblAuditTrail::findValueForDate(
+                self::PK_PERSON_MODEL_NAME_ID,
+                self::PLAYER_SHARE_FIELD_NAME_ID,
+                $pkPerson->id,
+                $dateNextMonth
+            )
+```

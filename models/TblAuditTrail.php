@@ -3,6 +3,7 @@
 namespace d3yii2\d3audittrail\models;
 
 use d3yii2\d3audittrail\models\base\TblAuditTrail as BaseTblAuditTrail;
+use DateTime;
 use sammaye\audittrail\AuditTraiNames;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -53,5 +54,37 @@ class TblAuditTrail extends BaseTblAuditTrail
         }
         Yii::$app->cache->delete('AuditTraiModelNamesList3');
         return self::findNameById($secondCall, true);
+    }
+
+    /**
+     * search field actual value for time
+     * @param int $modelNameId
+     * @param int $fieldNameId
+     * @param int $modelId
+     * @param DateTime $time
+     * @return string|null
+     */
+    public static function findValueForDate(
+        int $modelNameId,
+        int $fieldNameId,
+        int $modelId,
+        DateTime $time
+    ): ?string {
+        return
+            self::find()
+                ->select('new_value')
+                ->where([
+                    'model_name_id' => $modelNameId,
+                    'field_name_id' => $fieldNameId,
+                    'model_id' => $modelId,
+                ])
+                ->andWhere(
+                    'stamp < :date ',
+                    [':date' => $time->format('Y-m-d H:i:s')]
+                )
+                ->orderBy([
+                    'stamp' => SORT_DESC,
+                ])
+                ->scalar();
     }
 }
